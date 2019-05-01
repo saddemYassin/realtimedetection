@@ -8,14 +8,16 @@ import time
 import cv2
 
 ap = argparse.ArgumentParser()
-ap.add_argument_group("-p",'--prototxt',required=True,
+ap.add_argument("-p","--prototxt", required=True,
                         help="path to caffe 'deploy' prototxt file")
 
-ap.add_argument('-m','--model', required=True,
+ap.add_argument("-m","--model", required=True,
                 help="path to caffe pre-trained model")  
 
 ap.add_argument('-c',"--confidence",type=float,default=0.2,
                 help="minimum probability to filter weak detection")
+
+args = vars(ap.parse_args())               
 
 
 CLASS = ["background","aeroplane","bicycle","bird","boat","bottle",
@@ -45,7 +47,7 @@ while True:
 
     #grab the frame dimensions and convert it to a blob
     (h, w) = frame.shape[:2]
-    blob = cv2.dnn.blobFromImage(cv2.resize(frame,(300300)),
+    blob = cv2.dnn.blobFromImage(cv2.resize(frame,(300,300)),
             0.007843,(300,300),127.5)
 
     #pass the blob through the network and obtain the detections and 
@@ -55,7 +57,7 @@ while True:
 
 
     #loop over the detections
-    for i in np.arange(0,detections.shape[:2]):
+    for i in np.arange(0,detections.shape[2]):
         #extract the confidence (i.e , probaility) associted with 
         # the prediction
         confidence = detections[0,0,i,2]
@@ -78,7 +80,7 @@ while True:
 
             #show the output frame 
             cv2.imshow("Frame", frame)
-            key = cv.waitkey(1) & 0xFF
+            key = cv2.waitKey(1) & 0xFF
 
             #if the `q` key was pressed, break from the loop
             if key == ord("q"):
